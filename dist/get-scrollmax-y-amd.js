@@ -8,27 +8,31 @@ define(function(require,exports,module){
 
 var getScrollMaxY;
 
-if (typeof window.scrollMaxY === 'number') {
-  getScrollMaxY = function()  {return window.scrollMaxY};
-} else {
-  var body = document.body, html = document.documentElement;
-
-  var getInnerHeight;
-
-  if (typeof window.innerHeight === 'number') {
-    getInnerHeight = function()  {return window.innerHeight};
+if(typeof window !== 'undefined') {
+  if (typeof window.scrollMaxY === 'number') {
+    getScrollMaxY = function()  {return window.scrollMaxY};
   } else {
-    getInnerHeight = function()  {return html.clientHeight || body.clientHeight};
+    var body = document.body, html = document.documentElement;
+
+    var getInnerHeight = void 0;
+
+    if (typeof window.innerHeight === 'number') {
+      getInnerHeight = function()  {return window.innerHeight};
+    } else {
+      getInnerHeight = function()  {return html.clientHeight || body.clientHeight};
+    }
+
+    var getScrollHeight = function()  {return Math.max(
+      body.scrollHeight,
+      body.offsetHeight,
+      html.clientHeight,
+      html.scrollHeight
+    )};
+
+    getScrollMaxY = function()  {return getScrollHeight() - getInnerHeight()};
   }
-
-  var getScrollHeight = function()  {return Math.max(
-    body.scrollHeight,
-    body.offsetHeight,
-    html.clientHeight,
-    html.scrollHeight
-  )};
-
-  getScrollMaxY = function()  {return getScrollHeight() - getInnerHeight()};
+} else {
+  getScrollMaxY = function()  {return void 0};
 }
 
 return getScrollMaxY;
